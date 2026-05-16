@@ -24,7 +24,11 @@ export const initOrder = async (req: Request, res: Response) => {
       },
     });
 
-    res.json({ orderId: order.id, razorpayOrderId: razorpayOrder.id });
+    res.json({ 
+      orderId: order.id, 
+      razorpayOrderId: razorpayOrder.id,
+      demoMode: process.env.DEMO_MODE === 'true'
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

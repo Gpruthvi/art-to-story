@@ -30,15 +30,24 @@ const CreateStory = () => {
       });
 
       setOrderInfo(initRes.data);
-      alert('Order initiated! Now proceed to payment (simulated).');
       
-      // 3. Simulate Payment Success for this demo
-      await axios.post('/api/orders/payment-success', {
-        orderId,
-        razorpayOrderId: initRes.data.razorpayOrderId,
-        razorpayPaymentId: 'pay_test_123',
-        razorpaySignature: 'sig_test_123', // In real app, this is verified
-      });
+      if (initRes.data.demoMode) {
+        alert('Demo Mode: Automatically processing payment...');
+        await axios.post('/api/orders/payment-success', {
+          orderId,
+          razorpayOrderId: initRes.data.razorpayOrderId,
+          razorpayPaymentId: 'pay_test_123',
+          razorpaySignature: 'sig_test_123',
+        });
+      } else {
+        alert('Order initiated! Now proceed to payment (simulated).');
+        await axios.post('/api/orders/payment-success', {
+          orderId,
+          razorpayOrderId: initRes.data.razorpayOrderId,
+          razorpayPaymentId: 'pay_test_123',
+          razorpaySignature: 'sig_test_123',
+        });
+      }
 
       window.location.href = `/dashboard?orderId=${orderId}`;
     } catch (error) {
