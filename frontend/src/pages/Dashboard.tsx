@@ -12,7 +12,7 @@ const Dashboard = () => {
     queryKey: ['order', orderId],
     queryFn: async () => {
       if (!orderId) return null;
-      const res = await axios.get(`http://localhost:5001/api/orders/${orderId}`);
+      const res = await axios.get(`/api/orders/${orderId}`);
       return res.data;
     },
     enabled: !!orderId,

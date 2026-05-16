@@ -11,7 +11,7 @@ const CreateStory = () => {
     setLoading(true);
     try {
       // 1. Init Order
-      const initRes = await axios.post('http://localhost:5001/api/orders/init', {
+      const initRes = await axios.post('/api/orders/init', {
         email: 'user@example.com', // In a real app, get from auth
         name: 'Guest User',
         theme: 'Space Explorer',
@@ -25,7 +25,7 @@ const CreateStory = () => {
       files.forEach((file) => formData.append('files', file));
       formData.append('orderId', orderId);
 
-      await axios.post('http://localhost:5001/api/orders/upload', formData, {
+      await axios.post('/api/orders/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
@@ -33,7 +33,7 @@ const CreateStory = () => {
       alert('Order initiated! Now proceed to payment (simulated).');
       
       // 3. Simulate Payment Success for this demo
-      await axios.post('http://localhost:5001/api/orders/payment-success', {
+      await axios.post('/api/orders/payment-success', {
         orderId,
         razorpayOrderId: initRes.data.razorpayOrderId,
         razorpayPaymentId: 'pay_test_123',
