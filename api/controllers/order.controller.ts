@@ -46,10 +46,21 @@ export const handlePaymentSuccess = async (req: Request, res: Response) => {
       data: { status: 'PAID' },
     });
 
-    await inngest.send({
-      name: "app/order.paid",
-      data: { orderId },
-    });
+    // Send event to Inngest for background processing
+    if (!process.env.INNGEST_EVENT_KEY || process.env.INNGEST_EVENT_KEY === 'your_inngest_event_key' || process.env.INNGEST_EVENT_KEY === '') {
+      console.warn('Inngest keys missing, triggering background logic inline');
+      // For the prototype, we trigger the logic directly in a non-awaited way
+      fetch(`${process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5001'}/api/inngest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: 'app/order.paid', data: { orderId } })
+      }).catch(err => console.error('Inline trigger failed:', err));
+    } else {
+      await inngest.send({
+        name: "app/order.paid",
+        data: { orderId },
+      });
+    }
 
     res.json({ message: 'Payment verified and processing started' });
   } catch (error: any) {

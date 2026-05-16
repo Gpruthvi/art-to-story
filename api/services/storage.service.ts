@@ -9,7 +9,12 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export const uploadToSupabase = async (fileBuffer: Buffer | string, fileName: string, bucket: string = 'story-assets'): Promise<string> => {
+  if (!process.env.SUPABASE_URL || process.env.SUPABASE_URL === '') {
+    console.warn('Supabase URL missing, using original URL as public URL');
+    return typeof fileBuffer === 'string' ? fileBuffer : 'https://placehold.co/600x400?text=Story+Page';
+  }
   let body = fileBuffer;
+...
 
   // If it's a URL (from Pollinations), download it first
   if (typeof fileBuffer === 'string' && fileBuffer.startsWith('http')) {

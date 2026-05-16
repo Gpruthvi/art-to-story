@@ -18,11 +18,30 @@ export interface StoryScript {
 }
 
 export const generateStoryWithGemini = async (theme: string, imageUrls: string[]): Promise<StoryScript> => {
+  if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'your_gemini_api_key') {
+    console.warn('Gemini API key missing, using mock story');
+    return {
+      title: `The Magic of ${theme}`,
+      pages: [
+        {
+          pageNumber: 1,
+          text: "Once upon a time, in a world full of color, a new hero appeared.",
+          imagePrompt: "A whimsical character in a vibrant forest, oil painting style"
+        },
+        {
+          pageNumber: 2,
+          text: "With a single drawing, they could make anything come to life!",
+          imagePrompt: "A child drawing in the air with a glowing pencil"
+        }
+      ]
+    };
+  }
   const prompt = `
     I am uploading images of a child's drawing. 
     1. First, analyze the character in the drawing.
     2. Then, write a 10-page children's storybook script based on the theme: "${theme}".
-    
+...
+
     For each page, provide:
     1. The story text (2-3 whimsical sentences).
     2. A detailed image generation prompt. IMPORTANT: Use a consistent physical description for the character on every page so they look the same.
