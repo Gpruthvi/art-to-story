@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '../index';
 import { createOrder as createRazorpayOrder, verifyPayment } from '../services/razorpay.service';
 import { inngest } from '../services/inngest.client';
-import { uploadBuffer } from '../services/cloudinary.service';
+import { uploadToSupabase } from '../services/storage.service';
 
 export const initOrder = async (req: Request, res: Response) => {
   try {
@@ -42,7 +42,6 @@ export const handlePaymentSuccess = async (req: Request, res: Response) => {
       data: { status: 'PAID' },
     });
 
-    // Send event to Inngest for background processing
     await inngest.send({
       name: "app/order.paid",
       data: { orderId },
@@ -62,7 +61,7 @@ export const uploadAssets = async (req: Request, res: Response) => {
     if (!files || files.length === 0) return res.status(400).json({ error: 'No files uploaded' });
 
     for (const file of files) {
-      const url = await uploadBuffer(file.buffer);
+      const url = await uploadToSupabase(file.buffer, file.originalname);
       await prisma.asset.create({
         data: {
           orderId,
